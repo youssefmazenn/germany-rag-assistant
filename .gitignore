@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Secrets
+.env
+
+# Local vector DB + local datasets
+chroma_db/
+data/
+
+# Logs (we may add later)
+*.log
