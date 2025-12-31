@@ -90,6 +90,11 @@ def load_vectordb() -> None:
     )
 
 
+@app.get("/")
+def root():
+    return {"name": "Germany RAG Assistant", "docs": "/docs", "health": "/health"}
+
+
 @app.get("/health")
 def health() -> Dict[str, Any]:
     return {"status": "ok", "db_loaded": _vectordb is not None}
