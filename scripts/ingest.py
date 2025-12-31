@@ -7,8 +7,7 @@ from typing import Dict, List
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
-
+from langchain_chroma import Chroma
 
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 PERSIST_DIR = "chroma_db"
