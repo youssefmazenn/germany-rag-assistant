@@ -9,6 +9,19 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 
+import re
+
+
+def clean_pdf_text(text: str) -> str:
+    # Remove common print-to-PDF headers/footers like timestamps and URLs
+    text = re.sub(
+        r"\n?\d{1,2}/\d{1,2}/\d{2,4},\s*\d{1,2}:\d{2}\s*(AM|PM)\s*", " ", text
+    )
+    text = re.sub(r"https?://\S+", " ", text)
+    text = re.sub(r"\s{2,}", " ", text)
+    return text.strip()
+
+
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 PERSIST_DIR = "chroma_db"
 MANIFEST_PATH = "data_manifest.json"
@@ -67,6 +80,9 @@ def ingest_documents(manifest: List[DocMeta]) -> List:
 
         loader = PyPDFLoader(pdf_path)
         pages = loader.load()
+
+        for p in pages:
+            p.page_content = clean_pdf_text(p.page_content)
 
         # Attach metadata for every page
         for p in pages:

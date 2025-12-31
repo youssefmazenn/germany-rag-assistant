@@ -15,3 +15,6 @@ data/
 
 # Logs (we may add later)
 *.log
+
+data_raw/
+data_processed/

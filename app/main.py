@@ -1,6 +1,10 @@
 from typing import Any, Dict, List, Optional
 import os
+from openai import OpenAI
+import textwrap
+from dotenv import load_dotenv
 
+load_dotenv()
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
@@ -11,6 +15,18 @@ EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 PERSIST_DIR = "chroma_db"
 
 app = FastAPI(title="Germany RAG Assistant", version="0.1.0")
+
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+
+def format_context(chunks):
+    # Build a compact, citeable context for the LLM.
+    parts = []
+    for i, c in enumerate(chunks, 1):
+        cit = c.citation
+        cite = f"[{i}] {cit.authority} | {cit.source_file} | page {cit.page}"
+        parts.append(f"{cite}\n{c.text}")
+    return "\n\n".join(parts)
 
 
 # --- Models (API contracts) ---
@@ -44,6 +60,13 @@ class RetrievedChunk(BaseModel):
 class QueryResponse(BaseModel):
     question: str
     results: List[RetrievedChunk]
+
+
+class AnswerResponse(BaseModel):
+    question: str
+    answer: str
+    citations: List[Citation]
+    used_chunks: List[RetrievedChunk]
 
 
 # --- Load vector DB once at startup ---
@@ -137,3 +160,46 @@ def query(req: QueryRequest) -> QueryResponse:
             )
 
     return QueryResponse(question=req.question, results=results)
+
+
+@app.post("/answer", response_model=AnswerResponse)
+def answer(req: QueryRequest) -> AnswerResponse:
+    # 1) Retrieve evidence first (same logic as /query)
+    qr = query(req)  # reuse your query() logic
+    used = qr.results
+
+    # 2) Build strict prompt to prevent hallucination
+    context = format_context(used)
+    system = (
+        "You are a careful assistant answering questions about German residence/work rules. "
+        "You MUST use only the provided sources. If the sources do not contain enough "
+        "information, say you don't know and ask what document or detail is missing. "
+        "Always cite sources using [1], [2], ... matching the provided context blocks."
+    )
+    user = f"Question:\n{req.question}\n\nSources:\n{context}\n\nWrite a short, clear answer with citations."
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY environment variable is not set")
+
+    client = OpenAI(api_key=api_key)
+    # 3) Call the LLM
+    resp = client.chat.completions.create(
+        model=OPENAI_MODEL,
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ],
+        temperature=0.2,
+    )
+
+    answer_text = resp.choices[0].message.content.strip()
+
+    # 4) Return answer + evidence + citations
+    citations = [c.citation for c in used]
+    return AnswerResponse(
+        question=req.question,
+        answer=answer_text,
+        citations=citations,
+        used_chunks=used,
+    )
