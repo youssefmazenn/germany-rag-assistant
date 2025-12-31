@@ -1,0 +1,58 @@
+[
+  {
+    "doc_id": "job_search_18_months_berlin",
+    "title": "Residence permit for job search after completing studies (up to 18 months)",
+    "authority": "Berlin Immigration Office (Service Berlin)",
+    "category": "post-study",
+    "filename": "residence_permit_job_search_service_berlin.pdf",
+    "notes": "Authoritative local-government description of the 18-month job-seeker residence permit following graduation."
+  },
+  {
+    "doc_id": "job_search_after_study_heidelberg",
+    "title": "Job search following a stay in Germany after studies",
+    "authority": "City of Heidelberg",
+    "category": "post-study",
+    "filename": "job_search_following_study_heidelberg.pdf",
+    "notes": "Municipal-level explanation of job search residence permits after completing studies in Germany."
+  },
+  {
+    "doc_id": "bamf_job_search_after_study",
+    "title": "Job search after completing higher education",
+    "authority": "Federal Office for Migration and Refugees (BAMF)",
+    "category": "post-study",
+    "filename": "bamf_job_search_after_study.pdf",
+    "notes": "Federal-level confirmation of eligibility and duration of job search residence permits for graduates."
+  },
+  {
+    "doc_id": "prospects_after_graduation_make_it",
+    "title": "Prospects after graduation in Germany",
+    "authority": "Make it in Germany",
+    "category": "post-study",
+    "filename": "make_it_in_germany_prospects_after_graduation.pdf",
+    "notes": "Government portal summary covering post-study residence, employment rights, and transition options."
+  },
+  {
+    "doc_id": "student_work_bamf",
+    "title": "Studying and working in Germany",
+    "authority": "Federal Office for Migration and Refugees (BAMF)",
+    "category": "student",
+    "filename": "bamf_study_and_work.pdf",
+    "notes": "Official rules for student employment, including weekly hour limits and restrictions."
+  },
+  {
+    "doc_id": "student_work_make_it",
+    "title": "Working while studying in Germany",
+    "authority": "Make it in Germany",
+    "category": "student",
+    "filename": "make_it_in_germany_study_work.pdf",
+    "notes": "Practical overview of student work limits (20 hours/week, day-based limits) from a federal portal."
+  },
+  {
+    "doc_id": "eu_blue_card_germany",
+    "title": "EU Blue Card requirements in Germany",
+    "authority": "EU Immigration Portal",
+    "category": "work",
+    "filename": "eu_blue_card_germany_eu_portal.pdf",
+    "notes": "Official EU-level description of Blue Card eligibility, salary thresholds, and degree requirements."
+  }
+]
