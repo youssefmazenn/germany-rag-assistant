@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-api
+  namespace: germany-rag
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-api
+  template:
+    metadata:
+      labels:
+        app: rag-api
+    spec:
+      containers:
+        - name: rag-api
+          image: germany-rag-assistant:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 8000
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rag-secrets
+                  key: OPENAI_API_KEY
+            - name: OPENAI_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: OPENAI_MODEL
+            - name: PERSIST_DIR
+              valueFrom:
+                configMapKeyRef:
+                  name: rag-config
+                  key: PERSIST_DIR
+
+          volumeMounts:
+            - name: chroma-storage
+              mountPath: /app/chroma_db
+
+      volumes:
+        - name: chroma-storage
+          persistentVolumeClaim:
+            claimName: chroma-pvc
